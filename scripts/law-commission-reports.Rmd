@@ -1,0 +1,15 @@
+---
+title: "law-commission-reports"
+author: "Apoorv"
+date: "5/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
