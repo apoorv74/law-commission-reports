@@ -96,6 +96,19 @@ all_reports$`Report ID` <- as.character(all_reports$`Report ID`)
 
 view_reports <- left_join(all_reports, lc_links, by=NULL)
 view_reports$group_id <- NULL
+
+# add lc id in the report
+
+lc_report_id <-
+  readr::read_csv(
+    "../data/report-commision-id.csv",
+    col_types = cols(Commission = col_character(),
+                     ID = col_character())
+  )
+view_reports <- left_join(view_reports, lc_report_id, by=c('ID'='ID'))
+
+names(view_reports)[] <- c("ID", "Title", "Year", "URL", "Commission")
+
 write_csv(view_reports, "../data/lc-reports-with-url.csv")
 }
 ```
@@ -104,9 +117,9 @@ write_csv(view_reports, "../data/lc-reports-with-url.csv")
 view_reports <- read_csv(
     "../data/lc-reports-with-url.csv",
     col_types = cols(
-      `Report ID` = col_character(),
-      URL = col_character(),
-      Year = col_character()
+      ID = col_character(),
+      Year = col_character(),
+      Commission = col_character()
     )
   )
 ```
@@ -114,7 +127,9 @@ view_reports <- read_csv(
 ```{r Data Table}
 library(kableExtra)
 
-view_reports$URL <- text_spec(view_reports$URL, link = view_reports$URL)
+view_reports$Title <- text_spec(view_reports$Title, link = view_reports$URL)
+
+view_reports$URL <- NULL
 
 view_reports %>% DT::datatable(
   rownames = FALSE,
