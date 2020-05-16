@@ -101,14 +101,16 @@ write_csv(view_reports, "../data/lc-reports-with-url.csv")
 ```
 
 ```{r Detailed table}
-if(!update_data){
-  all_reports <- read_csv("../data/lc-reports-with-url.csv", 
-    col_types = cols(`Report ID` = col_character(), 
-        Year = col_character()))
-  
-  
+if(!update_data) {
+  view_reports <- read_csv(
+    "../data/lc-reports-with-url.csv",
+    col_types = cols(
+      `Report ID` = col_character(),
+      URL = col_character(),
+      Year = col_character()
+    )
+  )
 }
-
 ```
 
 ```{r Data Table}
