@@ -1,0 +1,66 @@
+---
+title: "Law Commission Reports"
+author: "[Reports](index.html) | [Commissions](Law-Commissions.html) | [Chairman](Chairman.html)"
+output: 
+  html_document:
+    css: styles.css
+    includes:
+      in_header: header.html
+      after_body: footer.html
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+```{r libraries}
+library(dplyr)
+library(rvest)
+library(DT)
+library(glue)
+library(stringr)
+library(readr)
+library(httr)
+```
+
+```{r base variables}
+reports_base_url <- "http://www.lawcommissionofindia.nic.in/main.htm"
+reports_base_xpath <- "/html/body/div/table"
+div_p_xpath <- "/html/body/div/p"
+lc_details_xpath <- "/html/body/div/table[1]"
+update_data <- FALSE
+```
+
+```{r get chairman details}
+if(update_data){
+all_div_p <- reports_base_url %>% read_html %>% html_nodes(xpath = div_p_xpath) %>% html_text()
+list_of_chairman <- all_div_p[grepl(pattern = "\\(chairman",x = all_div_p, ignore.case = TRUE)] %>% stringr::str_squish() %>% stringr::str_replace_all(pattern = "\\(|\\)",replacement = "")
+chairman_db <- data.frame('Name'=list_of_chairman)
+chairman_db$From <- stringr::str_sub(chairman_db$Name,start = -9,end = -6)
+chairman_db$To <- stringr::str_sub(chairman_db$Name,start = -4,end = -1)
+chairman_db$Name <- chairman_db$Name %>% stringr::str_replace_all(pattern = "[:digit:]+\\-[:digit:]+",replacement = "") %>% stringr::str_replace_all(pattern = "Chairman",replacement = "") %>% stringr::str_squish()
+
+other_chairman <- data.frame("Name"=c("Mr. Justice P. V. Reddi","Mr. Justice D. K. Jain","Mr. Justice A. P. Shah","Dr. Justice Balbir Singh Chauhan"), "From"=c("2009","2012","2013","2015"), "To"=c("2012","2013","2015","2018"))
+chairman_db <- dplyr::bind_rows(chairman_db, other_chairman)
+} else {
+chairman_db <- read_csv("../data/list-of-chairman.csv", 
+    col_types = cols(From = col_character(), 
+        To = col_character()))
+}
+```
+```{r Data Table}
+chairman_db %>% DT::datatable(
+  rownames = FALSE,
+  class = 'cell-border stripe',
+  escape = FALSE,
+  filter = "top",
+  options = list(pageLength = 10)
+)
+```
+
+
