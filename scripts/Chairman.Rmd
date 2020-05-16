@@ -47,6 +47,7 @@ chairman_db$Name <- chairman_db$Name %>% stringr::str_replace_all(pattern = "[:d
 
 other_chairman <- data.frame("Name"=c("Mr. Justice P. V. Reddi","Mr. Justice D. K. Jain","Mr. Justice A. P. Shah","Dr. Justice Balbir Singh Chauhan"), "From"=c("2009","2012","2013","2015"), "To"=c("2012","2013","2015","2018"))
 chairman_db <- dplyr::bind_rows(chairman_db, other_chairman)
+write_csv(chairman_db, "../data/list-of-chairman.csv")
 } else {
 chairman_db <- read_csv("../data/list-of-chairman.csv", 
     col_types = cols(From = col_character(), 

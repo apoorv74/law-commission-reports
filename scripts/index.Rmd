@@ -81,19 +81,12 @@ lc_21_reports <- data.frame(check.names = FALSE,
 )
 
 all_reports <- dplyr::bind_rows(all_reports, lc_21_reports)
-} else {
-  library(readr)
-all_reports <- read_csv("../data/reports-with-links.csv", 
-    col_types = cols(`Report ID` = col_character(), 
-        Year = col_character()))
-}
-```
 
-```{r Detailed table}
+write_csv(all_reports, "../data/lc-reports.csv")
+
 lc_links <- read_csv(
   "../data/law-commission-report-links.csv",
-  col_types = cols(`Report ID` = col_character())
-)
+  col_types = cols(`Report ID` = col_character()))
 
 lc_links <- lc_links %>% group_by(`Report ID`) %>% mutate(group_id=row_number())
 
@@ -103,6 +96,19 @@ all_reports$`Report ID` <- as.character(all_reports$`Report ID`)
 
 view_reports <- left_join(all_reports, lc_links, by=NULL)
 view_reports$group_id <- NULL
+write_csv(view_reports, "../data/lc-reports-with-url.csv")
+}
+```
+
+```{r Detailed table}
+if(!update_data){
+  all_reports <- read_csv("../data/lc-reports-with-url.csv", 
+    col_types = cols(`Report ID` = col_character(), 
+        Year = col_character()))
+  
+  
+}
+
 ```
 
 ```{r Data Table}
