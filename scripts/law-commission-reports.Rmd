@@ -26,7 +26,7 @@ library(stringr)
 reports_base_url <- "http://www.lawcommissionofindia.nic.in/main.htm"
 reports_base_xpath <- "/html/body/div/table"
 div_p_xpath <- "/html/body/div/p"
-div_table <- "/html/body/div/table"
+lc_details_xpath <- "/html/body/div/table[1]"
 ```
 
 
@@ -61,5 +61,18 @@ chairman_db$Name <- chairman_db$Name %>% stringr::str_replace_all(pattern = "[:d
 
 other_chairman <- data.frame("Name"=c("Mr. Justice P. V. Reddi","Mr. Justice D. K. Jain","Mr. Justice A. P. Shah","Dr. Justice Balbir Singh Chauhan"), "From"=c("2009","2012","2013","2015"), "To"=c("2012","2013","2015","2018"))
 chairman_db <- dplyr::bind_rows(chairman_db, other_chairman)
+```
+
+```{r Fetch LC details}
+lc_details <- reports_base_url %>% read_html() %>% html_nodes(xpath = lc_details_xpath) %>% html_table() %>% dplyr::bind_rows()
+lc_details <- lc_details[,c(1,2)]
+lc_details$X1 <- lc_details$X1 %>% stringr::str_to_title() %>% stringr::str_squish()
+lc_details$X2[lc_details$X1 == "Sixteenth Law Commission"] <- '2000-2003'
+lc_details$X2[lc_details$X1 == "Twentieth Law Commission"] <- '2012-2015'
+lc_details$From <- lc_details$X2 %>% stringr::str_extract_all(pattern = "[:digit:]+\\-") %>% unlist() %>% stringr::str_replace_all(pattern = "\\-",replacement = "") %>% stringr::str_squish()
+lc_details$To <- lc_details$X2 %>% stringr::str_extract_all(pattern = "\\-[:digit:]+") %>% unlist() %>% stringr::str_replace_all(pattern = "\\-",replacement = "") %>% stringr::str_squish()
+lc_details$To[as.numeric(lc_details$To)<100] <- glue("19{lc_details$To}")
+lc_details$X2 <- NULL
+names(lc_details)[] <- c('LC Title','From','To')
 ```
 
