@@ -1,5 +1,5 @@
 ---
-title: "law-commission-reports"
+title: "Law Commission Reports"
 author: "Apoorv"
 date: "5/15/2020"
 output: html_document
@@ -12,7 +12,6 @@ knitr::opts_chunk$set(
 	warning = FALSE
 )
 ```
-
 
 ```{r libraries}
 library(dplyr)
@@ -29,14 +28,14 @@ div_p_xpath <- "/html/body/div/p"
 lc_details_xpath <- "/html/body/div/table[1]"
 ```
 
-
 ```{r get report details}
 # This is from the above page - reports are structured in different tables with sequential ID's 
 all_tables <- seq(5,22)
 
-get_report_details <- function(table_number){
-  table_xpath <- glue("{base_xpath}[{table_number}]")  
-  table_data <- reports_base_url %>% read_html() %>% html_nodes(xpath = table_xpath) %>% html_table()
+get_report_details <- function(table_number) {
+  table_xpath <- glue("{base_xpath}[{table_number}]")
+  table_data <-
+    reports_base_url %>% read_html() %>% html_nodes(xpath = table_xpath) %>% html_table()
   table_data <- table_data[[1]]
   table_data[] <- sapply(table_data, as.character)
   return(table_data)
@@ -63,7 +62,7 @@ other_chairman <- data.frame("Name"=c("Mr. Justice P. V. Reddi","Mr. Justice D. 
 chairman_db <- dplyr::bind_rows(chairman_db, other_chairman)
 ```
 
-```{r Fetch LC details}
+```{r Fetch Law Commission details}
 lc_details <- reports_base_url %>% read_html() %>% html_nodes(xpath = lc_details_xpath) %>% html_table() %>% dplyr::bind_rows()
 lc_details <- lc_details[,c(1,2)]
 lc_details$X1 <- lc_details$X1 %>% stringr::str_to_title() %>% stringr::str_squish()
@@ -75,4 +74,3 @@ lc_details$To[as.numeric(lc_details$To)<100] <- glue("19{lc_details$To}")
 lc_details$X2 <- NULL
 names(lc_details)[] <- c('LC Title','From','To')
 ```
-
