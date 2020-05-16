@@ -19,6 +19,8 @@ library(rvest)
 library(DT)
 library(glue)
 library(stringr)
+library(readr)
+library(httr)
 ```
 
 ```{r base variables}
@@ -100,4 +102,3 @@ lc_details$To[as.numeric(lc_details$To)<100] <- glue("19{lc_details$To}")
 lc_details$X2 <- NULL
 names(lc_details)[] <- c('LC Title','From','To')
 ```
-
