@@ -102,3 +102,34 @@ lc_details$To[as.numeric(lc_details$To)<100] <- glue("19{lc_details$To}")
 lc_details$X2 <- NULL
 names(lc_details)[] <- c('LC Title','From','To')
 ```
+
+```{r Detailed table}
+lc_links <- read_csv(
+  "../data/law-commission-report-links.csv",
+  col_types = cols(`Report ID` = col_character())
+)
+
+lc_links_title <- dplyr::left_join(lc_links, all_reports, by=NULL)
+lc_links_title <- lc_links_title %>% group_by(`Report ID`) %>% mutate(group_id=row_number())
+lc_links_title <- lc_links_title[lc_links_title$group_id == 1,]
+all_reports$`Report ID` <- as.character(all_reports$`Report ID`)
+
+view_reports <- left_join(all_reports, lc_links_title, by=NULL)
+view_reports$group_id <- NULL
+```
+
+```{r Data Table}
+library(kableExtra)
+
+view_reports$URL <- text_spec(view_reports$URL, link = view_reports$URL)
+
+view_reports %>% DT::datatable(
+  rownames = FALSE,
+  class = 'cell-border stripe',
+  escape = FALSE,
+  filter = "top",
+  options = list(pageLength = 10)
+)
+```
+
+
