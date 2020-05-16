@@ -48,6 +48,32 @@ all_reports$X1 <- as.numeric(all_reports$X1)
 all_reports <- all_reports[!is.na(all_reports$X1),]
 all_reports$X2 <- all_reports$X2 %>% stringr::str_to_title() %>% stringr::str_squish()
 names(all_reports)[] <- c('Report ID','Title','Year')
+
+# Fetch reports from 21st LC
+lc_21_reports <- data.frame(check.names = FALSE, 
+  stringsAsFactors = FALSE,
+                `Report ID` = c(263L,264L,265L,266L,267L,
+                       268L,269L,270L,271L,272L,273L,274L,275L,276L,277L),
+                Title = c("The Protection of Children (Inter-Country Removal and Retention) Bill, 2016",
+                       "The Criminal Law (Amendment) Bill, 2017 (Provisions dealing with Food Adulteration)",
+                       "Prospects of Exempting Income arising out of Maintenance Money of Minor","Advocates Act",
+                       "Hate Speech",
+                       "Amendments to Criminal Procedure Code, 1973 – Provisions Relating to Bail | Corrigendum  to 268",
+                       "House-keeping of Egg-laying Hens",
+                       "Compulsory Registration of Marriages","Human DNA Profiling",
+                       "Assessment of Statutory Frameworks of Tribunals in India",
+                       "Implementation of United Nations Convention against Torture",
+                       "Review of the Contempt of Courts Act, 1971",
+                       "LEGAL FRAMEWORK: BCCI vis-à-vis RIGHT TO INFORMATION ACT, 2005",
+                       "Legal Framework: Gambling and Sports Betting Including  in Cricket in India",
+                       "Wrongful Prosecution (Miscarriage of Justice): Legal Remedies"),
+                Year = c(2016L,2017L,2017L,2017L,
+                       2017L,2017L,2017L,2017L,2017L,2017L,2017L,2018L,
+                       2018L,2018L,2018L) %>% as.character()
+)
+
+all_reports <- dplyr::bind_rows(all_reports, lc_21_reports)
+
 ```
 
 ```{r get chairman details}
@@ -74,3 +100,4 @@ lc_details$To[as.numeric(lc_details$To)<100] <- glue("19{lc_details$To}")
 lc_details$X2 <- NULL
 names(lc_details)[] <- c('LC Title','From','To')
 ```
+
