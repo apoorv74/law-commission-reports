@@ -35,7 +35,7 @@ lc_details_xpath <- "/html/body/div/table[1]"
 all_tables <- seq(5,22)
 
 get_report_details <- function(table_number) {
-  table_xpath <- glue("{base_xpath}[{table_number}]")
+  table_xpath <- glue("{reports_base_xpath}[{table_number}]")
   table_data <-
     reports_base_url %>% read_html() %>% html_nodes(xpath = table_xpath) %>% html_table()
   table_data <- table_data[[1]]
@@ -109,12 +109,13 @@ lc_links <- read_csv(
   col_types = cols(`Report ID` = col_character())
 )
 
-lc_links_title <- dplyr::left_join(lc_links, all_reports, by=NULL)
-lc_links_title <- lc_links_title %>% group_by(`Report ID`) %>% mutate(group_id=row_number())
-lc_links_title <- lc_links_title[lc_links_title$group_id == 1,]
+lc_links <- lc_links %>% group_by(`Report ID`) %>% mutate(group_id=row_number())
+
+lc_links <- lc_links[lc_links$group_id == 1,]
+
 all_reports$`Report ID` <- as.character(all_reports$`Report ID`)
 
-view_reports <- left_join(all_reports, lc_links_title, by=NULL)
+view_reports <- left_join(all_reports, lc_links, by=NULL)
 view_reports$group_id <- NULL
 ```
 
