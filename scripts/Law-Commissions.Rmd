@@ -47,6 +47,9 @@ lc_details$To <- lc_details$X2 %>% stringr::str_extract_all(pattern = "\\-[:digi
 lc_details$To[as.numeric(lc_details$To)<100] <- glue("19{lc_details$To[as.numeric(lc_details$To)<100]}")
 lc_details$X2 <- NULL
 names(lc_details)[] <- c('LC Title','From','To')
+
+twenty_first_lc <- data.frame(`LC Title`="Twenty First Law Commission",From="2015",To="2018", stringsAsFactors = FALSE, check.names = FALSE)
+lc_details <- dplyr::bind_rows(lc_details, twenty_first_lc)
 write_csv(lc_details, "../data/law-commision-details.csv")
 } else {
 lc_details <- read_csv("../data/law-commision-details.csv", 
